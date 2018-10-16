@@ -4,7 +4,6 @@ package main;
  * The constants.
  */
 public enum Constants {
-	
 	BISHOP("Bishop"),
 	BLACK("Black"),
 	BLACK_MAJOR_ROW(0),
@@ -52,5 +51,4 @@ public enum Constants {
 	public String getString() {
 		return stringValue;
 	}
-		
 }
