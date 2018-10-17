@@ -6,6 +6,14 @@ package main;
 public class Pieces {
 	
 	private Piece[] pieces = new Piece[Constants.TOTAL_PIECES.getInt()];
+	private String rook = Constants.ROOK.getString();
+	private String knight = Constants.KNIGHT.getString();
+	private String bishop = Constants.BISHOP.getString();
+	private String queen = Constants.QUEEN.getString();
+	private String king = Constants.KING.getString();
+	private String pawn = Constants.PAWN.getString();
+	private String black = Constants.BLACK.getString();
+	private String white = Constants.WHITE.getString();
 	
 	/**
 	 * The constructor.
@@ -28,15 +36,6 @@ public class Pieces {
 		final int TOTAL_PAWNS = 16;
 		
 		int index = 0;
-		
-		String rook = Constants.ROOK.getString();
-		String knight = Constants.KNIGHT.getString();
-		String bishop = Constants.BISHOP.getString();
-		String queen = Constants.QUEEN.getString();
-		String king = Constants.KING.getString();
-		String pawn = Constants.PAWN.getString();
-		String black = Constants.BLACK.getString();
-		String white = Constants.WHITE.getString();
 		
 		for(int i = 0; i < TOTAL_TYPES; i++) {
 			switch(i) {
@@ -113,7 +112,8 @@ public class Pieces {
 					
 					break;
 			}
-		}		
+		}
+		
 	}
 	
 	/**
@@ -127,11 +127,27 @@ public class Pieces {
 	 * @return Piece
 	 */
 	public Piece createPiece(String color, String type, int x, int y) {
+		Piece piece = null;
+		
 		int position[] = new int[2];
 		position[0] = x;
 		position[1] = y;
 		
-		return new Piece(color, type, position);
+		if(type == rook) {
+			piece = new Rook(color, type, position);
+		} else if(type == knight) {
+			piece = new Knight(color, type, position);
+		} else if(type == bishop) {
+			piece = new Bishop(color, type, position);
+		} else if(type == queen) {
+			piece = new Queen(color, type, position);
+		} else if(type == king) {
+			piece = new King(color, type, position);
+		} else if(type == pawn) {
+			piece = new Pawn(color, type, position);
+		}
+		
+		return piece;
 	}	
 	
 	public Piece[] getPieces() { return pieces; }
