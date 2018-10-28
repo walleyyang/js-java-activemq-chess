@@ -16,6 +16,8 @@ public class Game {
 	
 	public Game() {
 		 setId();
+		 
+		 new ActiveMQ();
 	}
 	
 	public int getId() { return id; }

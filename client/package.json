@@ -1,0 +1,32 @@
+{
+  "name": "jsjavachess",
+  "version": "1.0.0",
+  "description": "Javascript Java Chess Game with ActiveMQ",
+  "main": "index.js",
+  "scripts": {
+    "start": "babel-node index.js"
+  },
+  "keywords": [
+    "activemq",
+    "javascript",
+    "java"
+  ],
+  "author": "Walley Yang",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/polyfill": "^7.0.0",
+    "stompit": "^0.26.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/node": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "eslint": "^5.8.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
+  }
+}

@@ -1,5 +1,9 @@
 .classpath
 .project
 .settings
+.vscode
 
+activemq-data/
+build/
+node_modules/
 server/bin/
