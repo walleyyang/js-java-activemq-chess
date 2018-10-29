@@ -14,6 +14,8 @@ import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * The ActiveMQ object.
  */
@@ -21,20 +23,36 @@ public class ActiveMQ {
 
 	private final String URL = ActiveMQConnection.DEFAULT_BROKER_URL;
 	private boolean active = true;
+	private Producer producer = null;
+	private Consumer consumer = null;
 	
-	ActiveMQ() {		
-		new Thread(new Producer()).start();
-		new Thread(new Consumer()).start();
+	ActiveMQ() {
+		producer = new Producer();
+		consumer = new Consumer();
+		
+		new Thread(consumer).start();
 	}
 	
+	/** 
+	 * Sets the status of ActiveMQ
+	 */	
 	public void setActive() {
 		this.active = false;
+	}
+	
+	/** 
+	 * Sends the message
+	 * 
+	 * @param gameStatus The game status in JSON format
+	 */
+	public void sendMessage(String gameStatus) {
+		producer.sendMessage(gameStatus);
 	}
 	
 	/**
 	 * The Producer
 	 */
-	public class Producer implements Runnable {
+	public class Producer {
 		Connection connection = null;
 		Session session = null;
 		Destination destination = null;
@@ -42,17 +60,35 @@ public class ActiveMQ {
 		
 		String CHESS_STATUS_VALIDATED = "Chess.Status.Validated";
 		
+		Producer() {
+			try {
+				ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQ.this.URL);
+				
+			    connection = connectionFactory.createConnection();
+			    connection.start();
+			    
+			    session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			    
+			    destination = session.createTopic(CHESS_STATUS_VALIDATED);
+			    
+			    producer = session.createProducer(destination);
+	            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+			}  catch (Exception e) {
+				System.out.println("ActiveMQ Producer Exception: " + e);
+				e.printStackTrace();
+			}
+		}
+		
 		/** 
 		 * Sends message to ActiveMQ.
 		 */
-		public void sendMessage() {
-			TextMessage message = null;
-			
+		public void sendMessage(String gameStatus) {
 			try {
-				String text = "hello world!";
-				message = session.createTextMessage(text);
-				
-				producer.send(message);
+				if(!gameStatus.isEmpty()) {
+					TextMessage message = session.createTextMessage(gameStatus);
+					
+					producer.send(message);
+				}
 				
 				disconnect();
 			} catch (Exception e) {
@@ -74,28 +110,6 @@ public class ActiveMQ {
 				System.out.println("ActiveMQ Disconnect Exception: " + e);
 				e.printStackTrace();
 			}
-		}
-		
-		@Override
-		public void run() {
-			try {
-				ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQ.this.URL);
-				
-	            connection = connectionFactory.createConnection();
-	            connection.start();
-	            
-	            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-	            
-	            destination = session.createTopic(CHESS_STATUS_VALIDATED);
-	            
-	            producer = session.createProducer(destination);
-	            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-	            
-	            sendMessage();
-			} catch (Exception e) {
-                System.out.println("ActiveMQ Producer Exception: " + e);
-                e.printStackTrace();
-            }
 		}
 		
 	}
@@ -153,14 +167,23 @@ public class ActiveMQ {
 			
 			while (ActiveMQ.this.active) {
 				try {
-	                message = consumer.receive(WAIT);
-	 
+	                Message message = consumer.receive(WAIT);
+	                
 	                if (message instanceof TextMessage) {
 	                    TextMessage textMessage = (TextMessage) message;
 	                    String text = textMessage.getText();
-	                    System.out.println("Received: " + text);
-	                } else {
-	                    System.out.println("Received: " + message);
+	                    
+	                    ObjectMapper mapper = new ObjectMapper();
+		                GameMove gameMove = mapper.readValue(text, GameMove.class);
+	                    
+		                int gameMoveId = gameMove.getId();
+		                
+		                for(Game game : Games.getCurrentGames()) {
+		                	if(game.getId() == gameMoveId) {
+		                		game.validateMove(gameMove);
+		                	}
+		                }
+		                
 	                }
 
 	            } catch (Exception e) {
