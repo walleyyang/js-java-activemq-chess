@@ -182,7 +182,7 @@ public class Game {
 		// Check the currentPostion type to see if futureMovePosition is valid
 		// TODO: Implement
 //		if(currentPositionType == rook) {
-//			
+//			currentPosition.validMove(futureMovePosition);
 //		} else if(currentPositionType == knight) {
 //			
 //		} else if(currentPositionType == bishop) {
