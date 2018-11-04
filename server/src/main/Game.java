@@ -162,10 +162,15 @@ public class Game {
 				//validPieceMove = validatePieceMove(currentPosition, futurePosition);
 			//}
 			
+			if(validPieceMove) {
+				v
+			}
+			
 			
 		} else {
 			System.out.println("Validate Move Error.");
 		}
+		
 		
 	}
 	
@@ -178,12 +183,15 @@ public class Game {
 	 * @return True or false if the futureMovePosition is valid
 	 */
 	public boolean validatePieceMove(Piece currentPosition, int[] futureMovePosition) {
+		boolean validPieceMove = false;
 		String currentPositionType = currentPosition.getType();
+		
 		// Check the currentPostion type to see if futureMovePosition is valid
 		// TODO: Implement
-//		if(currentPositionType == rook) {
-//			currentPosition.validMove(futureMovePosition);
-//		} else if(currentPositionType == knight) {
+		if(currentPositionType == rook) {
+			validPieceMove = ((Pawn)currentPosition).validMove(futureMovePosition);
+		} 
+		//else if(currentPositionType == knight) {
 //			
 //		} else if(currentPositionType == bishop) {
 //			
@@ -195,7 +203,7 @@ public class Game {
 //			
 //		}
 				
-		return false;
+		return validPieceMove;
 	}
 	
 //	public boolean validatePieceMove(Piece currentPosition, Piece futurePosition) {
