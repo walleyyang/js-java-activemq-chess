@@ -3,15 +3,16 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const Path = require('path')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const Webpack = require('webpack')
 
 module.exports = {
   entry: {
-    vendor: './src/vendor.bundle.js',
-    app: './src/app.bundle.js'
+    vendor: './src/vendor.module.js',
+    app: './src/app.module.js'
   },
   output: {
     path: Path.resolve(__dirname, './dist'),
-    filename: '[name].js'
+    filename: '[name].bundle.js'
   },
   optimization: {
     minimizer: [
@@ -60,7 +61,8 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css'
-    })
+    }),
+    new Webpack.IgnorePlugin(/^pg-native$/) // Ignore: Can't resolve 'pg-native'
   ],
   devServer: {
     port: 9000
