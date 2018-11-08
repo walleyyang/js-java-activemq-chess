@@ -52,7 +52,6 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Chess Game',
       minify: {
         collapseWhitespace: true
       },

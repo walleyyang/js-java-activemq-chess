@@ -1,3 +1,1 @@
-require('react')
-require('react-dom')
-require('stompit')
+require('@stomp/stompjs')

@@ -13,6 +13,7 @@ import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQBytesMessage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -168,11 +169,25 @@ public class ActiveMQ {
 			while (ActiveMQ.this.active) {
 				try {
 	                Message message = consumer.receive(WAIT);
-	                
-	                if (message instanceof TextMessage) {
+
+	                if(message instanceof ActiveMQBytesMessage) {
+	                	byte[] receivedMessage = ((org.apache.activemq.command.Message) message).getContent().getData();
+	                	String text = new String(receivedMessage);
+	                	
+	                	ObjectMapper mapper = new ObjectMapper();
+		                GameMove gameMove = mapper.readValue(text, GameMove.class);
+	                    
+		                int gameMoveId = gameMove.getId();
+		                
+		                for(Game game : Games.getCurrentGames()) {
+		                	if(game.getId() == gameMoveId) {
+		                		game.validateMove(gameMove);
+		                	}
+		                }
+	                } else if(message instanceof TextMessage) {
 	                    TextMessage textMessage = (TextMessage) message;
 	                    String text = textMessage.getText();
-	                    
+
 	                    ObjectMapper mapper = new ObjectMapper();
 		                GameMove gameMove = mapper.readValue(text, GameMove.class);
 	                    
@@ -183,9 +198,7 @@ public class ActiveMQ {
 		                		game.validateMove(gameMove);
 		                	}
 		                }
-		                
 	                }
-
 	            } catch (Exception e) {
 	                System.out.println("ActiveMQ Consumer Message Exception: " + e);
 	                e.printStackTrace();

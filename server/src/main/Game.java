@@ -163,7 +163,7 @@ public class Game {
 			//}
 			
 			if(validPieceMove) {
-				v
+				//
 			}
 			
 			

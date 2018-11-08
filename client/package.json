@@ -17,14 +17,16 @@
   "license": "MIT",
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
-    "react": "^16.6.0",
-    "react-dom": "^16.6.0",
-    "stompit": "^0.26.0"
+    "@stomp/stompjs": "^5.0.0",
+    "@uirouter/angularjs": "^1.0.20",
+    "angular": "^1.7.5",
+    "pg": "^7.6.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
     "@babel/core": "^7.1.2",
     "@babel/node": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
     "babel-loader": "^8.0.4",
     "css-loader": "^1.0.1",
