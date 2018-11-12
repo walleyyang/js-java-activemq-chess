@@ -15,7 +15,7 @@ module.exports = class DB {
 
     this.pool = new Pool(config)
     console.log('hello')
-    this.getActiveGame()
+    
   }
 
   async getActiveGame () {
@@ -23,8 +23,13 @@ module.exports = class DB {
       let response = await this.pool.query('SELECT * FROM active_game')
       console.log('in getActiveGame')
       console.log(response.rows)
+      return response.rows
     } catch (e) {
       console.log('Database Error: ', e)
     }
+  }
+
+  createGame (id, name) {
+    this.pool.query('INSERT INTO active_game(game_id, white, black) VALUES($1, $2, $3)', [id, name, ''])
   }
 }

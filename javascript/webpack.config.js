@@ -4,6 +4,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const Path = require('path')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const Webpack = require('webpack')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
   entry: {
@@ -16,10 +17,10 @@ module.exports = {
   },
   optimization: {
     minimizer: [
-      new UglifyJsPlugin({
-        cache: true,
-        parallel: true
-      }),
+      // new UglifyJsPlugin({
+      //   cache: true,
+      //   parallel: true
+      // }),
       new OptimizeCSSAssetsPlugin({})
     ]
   },
@@ -37,10 +38,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader'
-        ]
+        use: ['style-loader', 'css-loader']
       },
       {
         test: /\.(jpe?g|png|svg)$/i,
@@ -48,11 +46,23 @@ module.exports = {
           'file-loader?name=[name].[ext]&publicPath=images/&outputPath=images/',
           'image-webpack-loader'
         ]
+      },
+      {
+        test: /\.(html)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+            outputPath: 'templates/'
+          }
+        },
+        exclude: Path.resolve(__dirname, 'src/index.html')
       }
     ]
   },
   plugins: [
     new HtmlWebpackPlugin({
+      filename: 'index.html',
       minify: {
         collapseWhitespace: true
       },
@@ -62,10 +72,11 @@ module.exports = {
       filename: '[name].css',
       chunkFilename: '[id].css'
     }),
+    new CleanWebpackPlugin(['dist']),
     new Webpack.IgnorePlugin(/^pg-native$/) // Ignore: Can't resolve 'pg-native'
   ],
   devServer: {
-    port: 9000
+    port: 3000
   },
   watch: true,
   node: {
