@@ -1,8 +1,8 @@
-const Stomp = require('@stomp/stompjs')
-
 /**
  * ActiveMQ module
  */
+
+const Stomp = require('@stomp/stompjs')
 export default class ActiveMQ {
   constructor () {
     this.host = 'ws://localhost:61614'

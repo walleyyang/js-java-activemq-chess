@@ -1,8 +1,14 @@
+/**
+ * Main entry point
+ */
+
 import angular from 'angular'
 import uirouter from '@uirouter/angularjs'
 
 import 'angular-cookies'
 import './services'
+
+import Variables from './common/constants'
 
 import GameView from './templates/game.html'
 import HomeView from './templates/home.html'
@@ -18,19 +24,20 @@ const requires = [
 
 const app = angular
   .module('app', requires)
+  .constant('Variables', Variables)
   .config(['$stateProvider', '$urlRouterProvider', routes])
 
 function routes ($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/')
 
   $stateProvider
-    .state('home', {
+    .state(Variables.STATE_HOME, {
       url: '/',
       templateUrl: HomeView,
       controller: HomeController,
       controllerAs: '$ctrl'
     })
-    .state('game', {
+    .state(Variables.STATE_GAME, {
       url: '/',
       templateUrl: GameView,
       controller: GameController,

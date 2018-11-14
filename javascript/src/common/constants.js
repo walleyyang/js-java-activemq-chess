@@ -2,8 +2,12 @@
  * Constants for the application.
  */
 
-const Constants = {
-  test: 'test'
+export default {
+  CHESSGAME: 'chessgame',
+  CREATE_GAME: 'Create Game',
+  EMPTY: 0,
+  JOIN_GAME: 'Join Game',
+  WAITING: 'Waiting',
+  STATE_GAME: 'game',
+  STATE_HOME: 'home'
 }
-
-export default Constants
