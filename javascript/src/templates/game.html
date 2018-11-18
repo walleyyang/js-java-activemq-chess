@@ -1,6 +1,22 @@
 <div class="game">
-  <div>Waiting On Opponent...</div>
-  <div>{{ $ctrl.id }}</div>
-  <div>{{ $ctrl.white }}</div>
-  <div>{{ $ctrl.black }}</div>
+  <div ng-if="$ctrl.white > 0 && $ctrl.black > 0">
+    Waiting On Opponent...
+  </div>
+  <div>White: <span ng-class="{ 'player-turn' : $ctrl.turn === $ctrl.white }">{{ $ctrl.white }}</span></div>
+  <div>Black: <span ng-class="{ 'player-turn' : $ctrl.turn === $ctrl.black }">{{ $ctrl.black }}</span></div>
+  <div>{{$ctrl.turn}}</div>
+  <div>
+    <table>
+      <tbody>
+        <tr ng-repeat="row in $ctrl.board track by $index"> 
+          <td 
+            class="board-cell" 
+            ng-repeat="x in $ctrl.board" 
+            ng-bind-html="row[$index] | unsafe">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="board"></div>
 </div>

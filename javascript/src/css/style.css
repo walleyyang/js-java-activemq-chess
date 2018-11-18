@@ -26,3 +26,39 @@ button:focus {
   font-size: 50px;
   cursor: pointer;
 }
+
+.player-turn {
+  color: green;
+}
+
+table tr:nth-child(even) td:nth-child(odd) {
+  background: #f2f2f2
+}
+
+table tr:nth-child(even) td:nth-child(even) {
+  background: #b5b5b5
+}
+
+table tr:nth-child(odd) td:nth-child(odd) {
+  background: #b5b5b5
+}
+
+table tr:nth-child(odd) td:nth-child(even) {
+  background: #f2f2f2
+}
+
+.board-cell {
+  font-size: 50px;
+  text-align: center;
+  width: 80px;
+  height: 80px;
+  border: 1px solid;
+}
+
+.cell-dark {
+  background: red;
+}
+
+.cell-light {
+  background: green;
+}

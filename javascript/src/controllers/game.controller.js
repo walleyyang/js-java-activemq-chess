@@ -3,45 +3,78 @@
  */
 
 export default class GameController {
-  constructor ($http, $state, $cookies, GameService, Variables) {
+  constructor ($http, $state, $cookies, $sce, GameService, Variables) {
     'ngInject'
 
     this.$http = $http
     this.$state = $state
     this.$cookies = $cookies
-
+    this.$sce = $sce
     this.GameService = GameService
     this.Variables = Variables
-
 
     this.gameId = 0
     this.white = ''
     this.black = ''
+    this.turn = ''
+    this.gameStatus = undefined
+    this.board = undefined
 
     this.checkGame()
- 
   }
 
-  // checkCookie () {
-  //   if (this.white.length === this.Variables.EMPTY) {
-  //     if (!this.$cookies.getObject(chessGame)) {
-  //       let data = {
-  //         gameId: this.gameId,
-  //         white: this.white
-  //       }
+  run () {
+    this.updateBoard()
+    // let delay = 1000
 
-  //       this.$cookies.putObject(chessGame, data)
-  //     }
-  //   } else if (this.black.length > this.Variables.EMPTY) {
-  //     if (!this.$cookies.getObject(chessGame)) {
-  //       let data = {
-  //         gameId: this.gameId,
-  //         black: this.black
-  //       }
+    // setInterval(() => {
+    //   let gameServiceStatus = this.GameService.getStatus()
 
-  //       this.$cookies.putObject(chessGame, data)
-  //     }
-  //   }
+    //   if (gameServiceStatus !== this.status) {
+    //     this.status = gameServiceStatus
+
+    //     this.setStatus(gameServiceStatus)
+    //   }
+    // }, delay)
+  }
+
+  // decodeHTML (value) {
+  //   return this.$sce.trustAsHtml(value)
+  // }
+  
+
+  updateBoard () {
+    let pieces = this.gameStatus.pieces
+    let board = [[], [], [], [], [], [], [], []]
+    let space = '&nbsp;'
+    let size = 8
+
+    // Create the board
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
+        board[i][j] = space
+      }
+    }
+
+    // Add pieces to board
+    for (let key in pieces) {
+      for (let piece in pieces[key]) {
+        let x = pieces[key][piece].position[0]
+        let y = pieces[key][piece].position[1]
+
+        board[x][y] = pieces[key][piece].icon
+      }
+    }
+
+    this.board = board
+  }
+
+  // setStatus (newStatus) {
+
+  //   console.log(this)
+  //   console.log(newStatus)
+  //   this.status = newStatus
+  //   console.log(this.status)
   // }
 
   checkGame () {
@@ -52,6 +85,15 @@ export default class GameController {
 
       if (data.black.length > this.Variables.EMPTY) {
         this.black = data.black
+        this.white = data.white
+        this.gameId = data.game_id
+        this.gameStatus = data.game_status
+
+        if (this.turn === '') {
+          this.turn = data.white
+        }
+
+        this.run()
       } else if (data.white.length > this.Variables.EMPTY) {
         this.white = data.white
         this.gameId = data.game_id

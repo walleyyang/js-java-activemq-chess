@@ -26,6 +26,7 @@ const app = angular
   .module('app', requires)
   .constant('Variables', Variables)
   .config(['$stateProvider', '$urlRouterProvider', routes])
+  .filter('unsafe', ($sce) => { return $sce.trustAsHtml })
 
 function routes ($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/')

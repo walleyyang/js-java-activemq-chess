@@ -33,9 +33,8 @@ app.post('/create/:id/player/:name', (req, res) => {
   let name = req.params.name
 
   database.getActiveGame().then((data) => {
-    if (data.length === 0) {
-      database.createGame(id, name)
-    }
+    database.createGame(id, name)
+    res.send()
   })
 })
 
@@ -45,6 +44,7 @@ app.post('/game/:id/add-second-player/:name', (req, res) => {
 
   database.getActiveGame().then((data) => {
     database.addSecondPlayer(id, name)
+    res.send()
   })
 })
 

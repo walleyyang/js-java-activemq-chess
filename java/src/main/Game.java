@@ -12,9 +12,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Game {
 	
 	private int id = 0;
-	private boolean joinable = true;
+//	private boolean joinable = true;
 	private boolean gameOver = false;
-	private Player[] players = new Player[2];
+//	private Player[] players = new Player[2];
 	private String turn = Constants.WHITE.getString();
 	private Pieces pieces = new Pieces();
 	
@@ -42,9 +42,9 @@ public class Game {
 	}
 	
 	public int getId() { return id; }
-	public boolean getJoinable() { return joinable; }
+//	public boolean getJoinable() { return joinable; }
 	public boolean getGameOver() { return gameOver; }
-	public Player[] getPlayers() { return players; }
+//	public Player[] getPlayers() { return players; }
 	public String getTurn() { return turn; }
 	public Pieces getPieces() { return pieces; }
 	/**
@@ -61,28 +61,28 @@ public class Game {
 	/**
 	 * Sets joinable depending on the number of players.
 	 */
-	public void setJoinable() {
-		int joinableFull = Constants.JOINABLE_FULL.getInt();
-		
-		joinable = players.length == joinableFull ? false : true;
-	}
+//	public void setJoinable() {
+//		int joinableFull = Constants.JOINABLE_FULL.getInt();
+//		
+//		joinable = players.length == joinableFull ? false : true;
+//	}
 	
 	/**
 	 * Sets the player for the game.
 	 * 
 	 * @param player
 	 */	
-	public void setPlayers(Player player) {
-		boolean joinable = getJoinable();
-		
-		if(joinable) {
-			if(getPlayers()[0] == null) {
-				getPlayers()[0] = player;
-			} else if(getPlayers()[1] == null) {
-				getPlayers()[1] = player;
-			}
-		}
-	}
+//	public void setPlayers(Player player) {
+//		boolean joinable = getJoinable();
+//		
+//		if(joinable) {
+//			if(getPlayers()[0] == null) {
+//				getPlayers()[0] = player;
+//			} else if(getPlayers()[1] == null) {
+//				getPlayers()[1] = player;
+//			}
+//		}
+//	}
 	
 	/**
 	 * Sets turn for player based on color.
