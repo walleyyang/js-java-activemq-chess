@@ -12,7 +12,8 @@
           <td 
             class="board-cell" 
             ng-repeat="x in $ctrl.board" 
-            ng-bind-html="row[$index] | unsafe">
+            ng-bind-html="row[$index] | unsafe"
+            ng-click="$ctrl.cellClicked($parent.$index, $index)">
           </td>
         </tr>
       </tbody>

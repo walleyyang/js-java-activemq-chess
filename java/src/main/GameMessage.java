@@ -1,14 +1,16 @@
 package main;
 
 /**
- * Used to hold receiving JSON string.
+ * Used to map message for receiving and sending.
  */
-public class GameMove {
+public class GameMessage {
 	
 	private int id = 0;
 	private String currentPlayerTurnColor = "";
 	private int[] currentPosition = new int[2];
 	private int[] futurePosition = new int[2];
+	private boolean validMove = false;
+	private boolean gameOver = false;
 	
 	public void setId(int id) { this.id = id; }
 	
@@ -24,6 +26,9 @@ public class GameMove {
 		this.futurePosition[1] = futurePosition[1];
 	}
 	
+	public void setValidMove(boolean validMove) { this.validMove = validMove; }
+	public void setGameOver(boolean gameOver) { this.gameOver = gameOver; }
+	
 	public int getId() { return this.id; }
 	
 	public String getCurrentPlayerTurnColor() { return this.currentPlayerTurnColor; }
@@ -31,4 +36,7 @@ public class GameMove {
 	public int[] getCurrentPosition() { return this.currentPosition; }
 	
 	public int[] getFuturePosition() { return this.futurePosition; }
+	
+	public boolean getValidMove() { return this.validMove; }
+	public boolean getGameOver() { return this.gameOver; }
 }

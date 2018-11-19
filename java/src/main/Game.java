@@ -3,6 +3,8 @@ package main;
 import java.util.Arrays;
 import java.util.Random;
 
+import javax.jms.Message;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,15 +32,15 @@ public class Game {
 	public Game() {
 		// TODO: Update 
 		//setId();
-		 this.id = 123;
+		// this.id = 123;
 		 
-		 String status = convertStatusToJson();
+		 //String status = convertStatusToJson();
 		 
-		 ActiveMQ activeMQ = new ActiveMQ();
-		 activeMQ.sendMessage(status);
+		 //ActiveMQ activeMQ = new ActiveMQ();
+//		 activeMQ.sendMessage(status);
 		 
-		 Games games = Games.getInstance();
-		 games.addGame(this);
+//		 Games games = Games.getInstance();
+//		 games.addGame(this);
 	}
 	
 	public int getId() { return id; }
@@ -50,13 +52,13 @@ public class Game {
 	/**
 	 * Sets a random number to the game id.
 	 */
-	public void setId() {
-		Random randomId = new Random();
-		int gameMinId = Constants.GAME_MIN_ID.getInt();
-		int gameMaxId = Constants.GAME_MAX_ID.getInt();
-		
-		id = randomId.nextInt(gameMaxId - gameMinId) + gameMinId;
-	}
+//	public void setId() {
+//		Random randomId = new Random();
+//		int gameMinId = Constants.GAME_MIN_ID.getInt();
+//		int gameMaxId = Constants.GAME_MAX_ID.getInt();
+//		
+//		id = randomId.nextInt(gameMaxId - gameMinId) + gameMinId;
+//	}
 	
 	/**
 	 * Sets joinable depending on the number of players.
@@ -101,75 +103,65 @@ public class Game {
 		gameOver = true;
 	}
 	
-	/**
-	 * Converts the game status to JSON.
-	 * 
-	 * @return JSON object
-	 */
-	public String convertStatusToJson() {
-		String json = "";
-		
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			json = mapper.writeValueAsString(this);
-		} catch (Exception e) {
-			System.out.println("Convert to JSON Exception: " + e);
-			e.printStackTrace();
-		}
-		
-		return json;
-	}
+
 	
 	/**
 	 * Validates the move from the player and the positions in the game.
 	 * 
 	 * @param gameMove The move object
 	 */
-	public void validateMove(GameMove gameMove) {
-		int id = gameMove.getId();
-		int[] currentMovePosition = gameMove.getCurrentPosition();
-		int[] futureMovePosition = gameMove.getFuturePosition();
-		
-		String currentPlayerTurnColor = gameMove.getCurrentPlayerTurnColor();
-		
-		Piece currentPosition = getPiecePosition(currentMovePosition);
-		Piece futurePosition = getPiecePosition(futureMovePosition);
-		
-		String currentPositionColor = null;
-		String currentPositionType = null;
-		
-		String futurePositionColor = null;
-		String futurePositionType = null;
-		
-		if(currentPosition != null) {
-			currentPositionColor = currentPosition.getColor();
-			currentPositionType = currentPosition.getType();
-		}
-		
-		if(futurePosition != null) {
-			futurePositionColor = futurePosition.getColor();
-			futurePositionType = futurePosition.getType();
-		}
-		
-		// Validate selected piece belongs to current player
-		if(currentPlayerTurnColor == currentPositionColor) {
-			boolean validPieceMove = false;
-			
-			// Validate selected piece can move to future position
-			if(futurePosition == null) {
-				validPieceMove = validatePieceMove(currentPosition, futureMovePosition);				
-			} //else if(futurePositionColor != currentPlayerTurnColor) {
-				//validPieceMove = validatePieceMove(currentPosition, futurePosition);
-			//}
-			
-			if(validPieceMove) {
-				//
-			}
-			
-			
-		} else {
-			System.out.println("Validate Move Error.");
-		}
+	public boolean validateMove(GameMessage mappedMessage) {
+		return true;
+//		System.out.println("in game move...");
+//		int id = gameMove.getId();
+//		int[] currentMovePosition = gameMove.getCurrentPosition();
+//		int[] futureMovePosition = gameMove.getFuturePosition();
+//		
+//		System.out.println("in validMove");
+//		System.out.println(id);
+//		System.out.println(currentMovePosition);
+//		System.out.println(futureMovePosition);
+//		
+//		String currentPlayerTurnColor = gameMove.getCurrentPlayerTurnColor();
+//		
+//		Piece currentPosition = getPiecePosition(currentMovePosition);
+//		Piece futurePosition = getPiecePosition(futureMovePosition);
+//		
+//		String currentPositionColor = null;
+//		String currentPositionType = null;
+//		
+//		String futurePositionColor = null;
+//		String futurePositionType = null;
+//		
+//		if(currentPosition != null) {
+//			currentPositionColor = currentPosition.getColor();
+//			currentPositionType = currentPosition.getType();
+//		}
+//		
+//		if(futurePosition != null) {
+//			futurePositionColor = futurePosition.getColor();
+//			futurePositionType = futurePosition.getType();
+//		}
+//		
+//		// Validate selected piece belongs to current player
+//		if(currentPlayerTurnColor == currentPositionColor) {
+//			boolean validPieceMove = false;
+//			
+//			// Validate selected piece can move to future position
+//			if(futurePosition == null) {
+//				validPieceMove = validatePieceMove(currentPosition, futureMovePosition);				
+//			} //else if(futurePositionColor != currentPlayerTurnColor) {
+//				//validPieceMove = validatePieceMove(currentPosition, futurePosition);
+//			//}
+//			
+//			if(validPieceMove) {
+//				//
+//			}
+//			
+//			
+//		} else {
+//			System.out.println("Validate Move Error.");
+//		}
 		
 		
 	}

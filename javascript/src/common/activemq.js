@@ -19,6 +19,8 @@ export default class ActiveMQ {
 
   /**
    * Creates a new Client
+   *
+   * @returns {Object}
    */
   client () {
     return (
@@ -57,7 +59,7 @@ export default class ActiveMQ {
   /**
    * Sends message to ActiveMQ
    *
-   * @param message The message to send
+   * @param {Object} The message to send
    */
   sendMessage (message) {
     this.sendClient.onConnect = (frame) => {

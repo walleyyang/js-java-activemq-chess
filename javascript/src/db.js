@@ -16,6 +16,9 @@ module.exports = class DB {
     this.pool = new Pool(config)
   }
 
+  /**
+   * Creates database query pool for multiple concurrent requests
+   */
   async getActiveGame () {
     try {
       let response = await this.pool.query('SELECT * FROM active_game')
@@ -25,18 +28,52 @@ module.exports = class DB {
     }
   }
 
+  /**
+   * Creates the game in the database
+   *
+   * @param {number} id
+   * @param {string} name
+   */
   createGame (id, name) {
     this.pool.query('INSERT INTO active_game(game_id, white, black, game_status) VALUES($1, $2, $3, $4)', [id, name, '', this.initGame(id)])
   }
 
+  /**
+   * Deletes game from database
+   *
+   * @param {number} id
+   */
   deleteGame (id) {
     this.pool.query('DELETE FROM active_game WHERE game_id = $1', [id])
   }
 
+  /**
+   * Adds second player to database
+   *
+   * @param {number} id
+   * @param {string} name
+   */
   addSecondPlayer (id, name) {
     this.pool.query('UPDATE active_game SET black = $2 WHERE game_id = $1', [id, name])
   }
 
+  /**
+   * Updates the game status
+   *
+   * @param {number} id
+   * @param {Object} newStatus
+   */
+  updateGameStatus (id, newStatus) {
+    this.pool.query('UPDATE active_game SET game_status = $2 WHERE game_id = $1', [id, newStatus])
+  }
+
+  /**
+   * Creates the initial pieces and status
+   *
+   * @param {number} id
+   *
+   * @returns {Object} The initial pieces and status object
+   */
   // Probably other better place to put this, but it works for now
   initGame (id) {
     return {

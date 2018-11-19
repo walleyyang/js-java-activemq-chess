@@ -19,64 +19,100 @@ export default class GameController {
     this.turn = ''
     this.gameStatus = undefined
     this.board = undefined
+    this.currentPosition = []
+    this.futurePosition = []
+    this.receivedMessage = undefined
 
     this.checkGame()
   }
 
   run () {
+    let delay = 1000
+
     this.updateBoard()
-    // let delay = 1000
 
-    // setInterval(() => {
-    //   let gameServiceStatus = this.GameService.getStatus()
+    setInterval(() => {
+      this.handleReceivedMessage()
+//       let receivedMessage = this.GameService.readMessage()
+//       let currentReceivedmessage = JSON.stringify(this.receivedMessage)
 
-    //   if (gameServiceStatus !== this.status) {
-    //     this.status = gameServiceStatus
+//       if (receivedMessage !== null && receivedMessage !== currentReceivedmessage) {
 
-    //     this.setStatus(gameServiceStatus)
-    //   }
-    // }, delay)
+//         this.receivedMessage = JSON.parse(receivedMessage)
+// console.log(receivedMessage)
+//         if (this.receivedMessage.validMove) {
+//           this.turn = this.receivedMessage.currentPlayerTurnColor === this.Variables.WHITE ? this.black : this.white
+//           this.currentPosition = []
+//           this.futurePosition = []
+//         } else if (!this.receivedMessage.validMove) {
+//           console.log('invalid move!!!!')
+//         }
+        
+//       }
+    }, delay)
   }
 
-  // decodeHTML (value) {
-  //   return this.$sce.trustAsHtml(value)
-  // }
-  
+  handleReceivedMessage () {
+    let receivedMessage = this.GameService.readMessage()
+      let currentReceivedmessage = JSON.stringify(this.receivedMessage)
 
+      if (receivedMessage !== null && receivedMessage !== currentReceivedmessage) {
+        this.receivedMessage = JSON.parse(receivedMessage)
+console.log(receivedMessage)
+        if (this.receivedMessage.validMove) {
+          this.turn = this.receivedMessage.currentPlayerTurnColor === this.Variables.WHITE ? this.Variables.BLACK : this.Variables.WHITE
+          this.currentPosition = []
+          this.futurePosition = []
+
+          this.GameService.updatePieces(this.receivedMessage.id,
+                                        this.turn,
+                                        this.receivedMessage.gameOver,
+                                        this.receivedMessage.currentPosition,
+                                        this.receivedMessage.futurePosition
+                                        )
+          console.log(this.gameStatus)
+        } else if (!this.receivedMessage.validMove) {
+          console.log('invalid move!!!!')
+        }
+        
+      }
+  }
+
+  updateGameStatus () {
+
+  }
+
+  /**
+   * Sets the current and future positions for the clicked cells
+   *
+   * @param {number} x
+   * @param {number} y
+   */
+  cellClicked (x, y) {
+    // if (this.currentPosition.length > this.Variables.EMPTY && this.futurePosition.length > this.Variables.EMPTY) {
+    //   return
+    // }
+
+    if (this.currentPosition.length === this.Variables.EMPTY) {
+      this.currentPosition = [x, y]
+    } else if (this.futurePosition.length === this.Variables.EMPTY) {
+      let turn = this.turn === this.white ? this.Variables.WHITE : this.Variables.BLACK
+
+      this.futurePosition = [x, y]
+      this.GameService.validateMove(this.gameId, turn, this.currentPosition, this.futurePosition)
+    }
+  }
+
+  /**
+   * Sets the controller board to the updated board
+   */
   updateBoard () {
-    let pieces = this.gameStatus.pieces
-    let board = [[], [], [], [], [], [], [], []]
-    let space = '&nbsp;'
-    let size = 8
-
-    // Create the board
-    for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
-        board[i][j] = space
-      }
-    }
-
-    // Add pieces to board
-    for (let key in pieces) {
-      for (let piece in pieces[key]) {
-        let x = pieces[key][piece].position[0]
-        let y = pieces[key][piece].position[1]
-
-        board[x][y] = pieces[key][piece].icon
-      }
-    }
-
-    this.board = board
+    this.board = this.GameService.updateBoard(this.gameStatus.pieces)
   }
 
-  // setStatus (newStatus) {
-
-  //   console.log(this)
-  //   console.log(newStatus)
-  //   this.status = newStatus
-  //   console.log(this.status)
-  // }
-
+  /**
+   * Checks the data from the game
+   */
   checkGame () {
     let url = '/check-game'
 
