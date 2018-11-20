@@ -49,17 +49,12 @@ app.post('/game/:id/add-second-player/:name', (req, res) => {
   })
 })
 
-app.post('/id/:id/turn/:turn/gameOver/:gameOver/current/:current/future/:future', (req, res) => {
+app.post('/id/:id/game-status/:gameStatus', (req, res) => {
   let id = req.params.id
-  let turn = req.params.turn
-  let gameOver = req.params.gameOver
-  let current = [parseInt(req.params.current[0]), parseInt(req.params.current[2])]
-  let future = [parseInt(req.params.future[0]), parseInt(req.params.future[2])]
+  let gameStatus = req.params.gameStatus
 
   database.getActiveGame().then((data) => {
-    let newStatus = updateGameStatus(data, turn, gameOver, current, future)
-
-    database.updateGameStatus(id, newStatus)
+    database.updateGameStatus(id, JSON.parse(JSON.stringify(gameStatus)))
     res.send()
   })
 })
@@ -67,25 +62,3 @@ app.post('/id/:id/turn/:turn/gameOver/:gameOver/current/:current/future/:future'
 app.listen(3000, () => {
   console.log('Listening on localhost:3000')
 })
-
-function updateGameStatus (data, turn, gameOver, current, future) {
-  let gameStatus = data[0].game_status
-
-  for (let key in gameStatus.pieces) {
-    for (let piece in gameStatus.pieces[key]) {
-      let item = gameStatus.pieces[key][piece]
-      let x = item.position[0]
-      let y = item.position[1]
-
-      if (x === current[0] && y === current[1]) {
-        item.position = [future[0], future[1]]
-      } else if (x === future[0] && y === future[1]) {
-        if (item.color !== turn) {
-          item.removed = true
-        }
-      }
-    }
-  }
-
-  return gameStatus
-}

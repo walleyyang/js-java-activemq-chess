@@ -1,15 +1,11 @@
 /**
  * The Game Controller
  */
-
 export default class GameController {
-  constructor ($http, $state, $cookies, $sce, GameService, Variables) {
+  constructor ($http, GameService, Variables) {
     'ngInject'
 
     this.$http = $http
-    this.$state = $state
-    this.$cookies = $cookies
-    this.$sce = $sce
     this.GameService = GameService
     this.Variables = Variables
 
@@ -23,9 +19,12 @@ export default class GameController {
     this.futurePosition = []
     this.receivedMessage = undefined
 
-    this.checkGame()
+    this.checkPlayersJoined()
   }
 
+  /**
+   * Runs the game
+   */
   run () {
     let delay = 1000
 
@@ -33,53 +32,35 @@ export default class GameController {
 
     setInterval(() => {
       this.handleReceivedMessage()
-//       let receivedMessage = this.GameService.readMessage()
-//       let currentReceivedmessage = JSON.stringify(this.receivedMessage)
-
-//       if (receivedMessage !== null && receivedMessage !== currentReceivedmessage) {
-
-//         this.receivedMessage = JSON.parse(receivedMessage)
-// console.log(receivedMessage)
-//         if (this.receivedMessage.validMove) {
-//           this.turn = this.receivedMessage.currentPlayerTurnColor === this.Variables.WHITE ? this.black : this.white
-//           this.currentPosition = []
-//           this.futurePosition = []
-//         } else if (!this.receivedMessage.validMove) {
-//           console.log('invalid move!!!!')
-//         }
-        
-//       }
     }, delay)
   }
 
+  /**
+   * Handles the received message from ActiveMQ
+   */
   handleReceivedMessage () {
     let receivedMessage = this.GameService.readMessage()
-      let currentReceivedmessage = JSON.stringify(this.receivedMessage)
+    let currentReceivedmessage = JSON.stringify(this.receivedMessage)
 
-      if (receivedMessage !== null && receivedMessage !== currentReceivedmessage) {
-        this.receivedMessage = JSON.parse(receivedMessage)
-console.log(receivedMessage)
-        if (this.receivedMessage.validMove) {
-          this.turn = this.receivedMessage.currentPlayerTurnColor === this.Variables.WHITE ? this.Variables.BLACK : this.Variables.WHITE
-          this.currentPosition = []
-          this.futurePosition = []
+    if (receivedMessage !== null && receivedMessage !== currentReceivedmessage) {
+      this.receivedMessage = JSON.parse(receivedMessage)
 
-          this.GameService.updatePieces(this.receivedMessage.id,
-                                        this.turn,
-                                        this.receivedMessage.gameOver,
-                                        this.receivedMessage.currentPosition,
-                                        this.receivedMessage.futurePosition
-                                        )
-          console.log(this.gameStatus)
-        } else if (!this.receivedMessage.validMove) {
-          console.log('invalid move!!!!')
-        }
-        
+      if (this.receivedMessage.validMove) {
+        this.turn = this.receivedMessage.currentPlayerTurnColor === this.Variables.WHITE ? this.Variables.BLACK : this.Variables.WHITE
+        this.currentPosition = []
+        this.futurePosition = []
+
+        this.gameStatus =
+          this.GameService.updateGameStatus(this.turn, this.receivedMessage.gameOver, this.receivedMessage.currentPosition,
+            this.receivedMessage.futurePosition, this.gameStatus)
+
+        this.GameService.updateDatabaseGameStatus(this.receivedMessage.id, this.gameStatus)
+
+        this.updateBoard()
+      } else if (!this.receivedMessage.validMove) {
+        console.log('invalid move!!!!')
       }
-  }
-
-  updateGameStatus () {
-
+    }
   }
 
   /**
@@ -89,9 +70,9 @@ console.log(receivedMessage)
    * @param {number} y
    */
   cellClicked (x, y) {
-    // if (this.currentPosition.length > this.Variables.EMPTY && this.futurePosition.length > this.Variables.EMPTY) {
-    //   return
-    // }
+    if (this.currentPosition.length > this.Variables.EMPTY && this.futurePosition.length > this.Variables.EMPTY) {
+      return
+    }
 
     if (this.currentPosition.length === this.Variables.EMPTY) {
       this.currentPosition = [x, y]
@@ -111,9 +92,9 @@ console.log(receivedMessage)
   }
 
   /**
-   * Checks the data from the game
+   * Checks if players joined game
    */
-  checkGame () {
+  checkPlayersJoined () {
     let url = '/check-game'
 
     this.$http.get(url).then((res) => {

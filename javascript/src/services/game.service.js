@@ -2,6 +2,7 @@
  * The Game Service
  */
 import ActiveMQ from '../common/activemq' // Probably can put this elsewhere
+
 export default class GameService {
   constructor ($cookies, $http, $state, Variables) {
     'ngInject'
@@ -12,21 +13,26 @@ export default class GameService {
     this.Variables = Variables
     this.ActiveMQ = new ActiveMQ()
 
-    // this.receivedMessage = undefined
-
     this.checkJoinedPlayer()
   }
 
+  /**
+   * Reads the message from ActiveMQ
+   */
   readMessage () {
-    
-
-    // if (this.ActiveMQ.message !== this.receivedMessage) {
-    //   this.receivedMessage = this.ActiveMQ.message
-    // }
     this.ActiveMQ.readMessage()
+
     return this.ActiveMQ.message
   }
 
+  /**
+   * Sends message to backend through ActiveMQ to validate move
+   *
+   * @param {number} gameId
+   * @param {string} turn
+   * @param {number[]} current
+   * @param {number[]} future
+   */
   validateMove (gameId, turn, current, future) {
     let move = {
       "id": gameId,
@@ -130,17 +136,44 @@ export default class GameService {
   }
 
   /**
-   * Updates the pieces
+   * Updates the database game status
    *
    * @param {number} id
+   * @param {Object} gameStatus
+   */
+  updateDatabaseGameStatus (id, gameStatus) {
+    let url = '/id/' + id + '/game-status/' + gameStatus
+
+    this.$http.post(url)
+  }
+
+  /**
+   * Updates the database game status
+   *
    * @param {string} turn
    * @param {boolean} gameOver
    * @param {number[]} current
    * @param {number[]} future
+   * @param {Object} gameStatus
    */
-  updatePieces (id, turn, gameOver, current, future) {
-    let url = '/id/' + id + '/turn/' + turn + '/gameOver/' + gameOver + '/current/' + current + '/future/' + future
-    this.$http.post(url)
+  updateGameStatus (turn, gameOver, current, future, gameStatus) {
+    for (let key in gameStatus.pieces) {
+      for (let piece in gameStatus.pieces[key]) {
+        let item = gameStatus.pieces[key][piece]
+        let x = item.position[0]
+        let y = item.position[1]
+
+        if (x === current[0] && y === current[1]) {
+          item.position = [future[0], future[1]]
+        } else if (x === future[0] && y === future[1]) {
+          if (item.color !== turn) {
+            item.removed = true
+          }
+        }
+      }
+    }
+
+    return gameStatus
   }
 
   /**
