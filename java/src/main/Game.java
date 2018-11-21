@@ -111,8 +111,10 @@ public class Game {
 	 * @param gameMove The move object
 	 */
 	public boolean validateMove(GameMessage mappedMessage) {
+		System.out.println("in validateMove");
+		
 		return true;
-//		System.out.println("in game move...");
+
 //		int id = gameMove.getId();
 //		int[] currentMovePosition = gameMove.getCurrentPosition();
 //		int[] futureMovePosition = gameMove.getFuturePosition();

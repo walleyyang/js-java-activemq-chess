@@ -22,6 +22,8 @@ public class GameManager {
 //		
 //		GameMove moveMessage = activeMQ.getMoveMessage();
 //		System.out.println(moveMessage);
+		PostgreSQLJDBC postgres = new PostgreSQLJDBC();
+		postgres.getGameStatus();
 		run();
 	}
 	
