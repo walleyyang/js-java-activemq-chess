@@ -66,12 +66,10 @@ export default class GameService {
 
     // Add pieces to board
     for (let key in pieces) {
-      for (let piece in pieces[key]) {
-        let x = pieces[key][piece].position[0]
-        let y = pieces[key][piece].position[1]
+      let x = pieces[key].position[0]
+      let y = pieces[key].position[1]
 
-        board[x][y] = pieces[key][piece].icon
-      }
+      board[x][y] = pieces[key].icon
     }
 
     return board
@@ -142,9 +140,14 @@ export default class GameService {
    * @param {Object} gameStatus
    */
   updateDatabaseGameStatus (id, gameStatus) {
-    let url = '/id/' + id + '/game-status/' + gameStatus
+    let url = '/id/' + id + '/game-status'
 
-    this.$http.post(url)
+    this.$http({
+      method: 'post',
+      url: url,
+      headers: { 'Content-Type': 'application/json' },
+      data: JSON.stringify(gameStatus)
+    })
   }
 
   /**
@@ -158,17 +161,15 @@ export default class GameService {
    */
   updateGameStatus (turn, gameOver, current, future, gameStatus) {
     for (let key in gameStatus.pieces) {
-      for (let piece in gameStatus.pieces[key]) {
-        let item = gameStatus.pieces[key][piece]
-        let x = item.position[0]
-        let y = item.position[1]
+      let item = gameStatus.pieces[key]
+      let x = item.position[0]
+      let y = item.position[1]
 
-        if (x === current[0] && y === current[1]) {
-          item.position = [future[0], future[1]]
-        } else if (x === future[0] && y === future[1]) {
-          if (item.color !== turn) {
-            item.removed = true
-          }
+      if (x === current[0] && y === current[1]) {
+        item.position = [future[0], future[1]]
+      } else if (x === future[0] && y === future[1]) {
+        if (item.color !== turn) {
+          item.removed = true
         }
       }
     }

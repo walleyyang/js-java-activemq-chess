@@ -37,24 +37,31 @@ public class PostgreSQLJDBC {
 
 	/**
 	 * Gets the game status
+	 * 
+	 * @return JSON string
 	 */
-	public void getGameStatus() {
+	public String getGameStatus() {
+		String gameStatus = "";
+		
 		try {
 			connection.setAutoCommit(false);
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery("SELECT * FROM active_game");
 			
 			while(resultSet.next()) {
-				System.out.println(resultSet.getString("game_status"));
+				gameStatus = resultSet.getString("game_status");
 			}
 			
 			resultSet.close();
 			statement.close();
 			connection.close();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println(e.getClass().getName()+": "+e.getMessage());
 			System.exit(0);
 		}
+		
+		return gameStatus;
 	}
 }

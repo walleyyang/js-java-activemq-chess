@@ -42,6 +42,8 @@ export default class GameController {
     let receivedMessage = this.GameService.readMessage()
     let currentReceivedmessage = JSON.stringify(this.receivedMessage)
 
+    console.log(receivedMessage)
+
     if (receivedMessage !== null && receivedMessage !== currentReceivedmessage) {
       this.receivedMessage = JSON.parse(receivedMessage)
 

@@ -1,11 +1,18 @@
 package main;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 
 import javax.jms.Message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -111,61 +118,101 @@ public class Game {
 	 * @param gameMove The move object
 	 */
 	public boolean validateMove(GameMessage mappedMessage) {
-		System.out.println("in validateMove");
+		boolean isValidMove = false;
 		
-		return true;
+		int[] mappedMessageCurrentPosition = mappedMessage.getCurrentPosition();
+		int[] mappedMessageFuturePosition = mappedMessage.getFuturePosition();
+		
+		int messageCurrentPositionX = mappedMessageCurrentPosition[0];
+		int messageCurrentPositionY = mappedMessageCurrentPosition[1];
+		int messageFuturePositionX = mappedMessageFuturePosition[0];
+		int messageFuturePositionY = mappedMessageFuturePosition[1];
+		
+		GenericPiece currentGenericPiece = getPieceFromDatabase(messageCurrentPositionX, messageCurrentPositionY);
+		GenericPiece futureGenericPiece = getPieceFromDatabase(messageFuturePositionX, messageFuturePositionY);
 
-//		int id = gameMove.getId();
-//		int[] currentMovePosition = gameMove.getCurrentPosition();
-//		int[] futureMovePosition = gameMove.getFuturePosition();
-//		
-//		System.out.println("in validMove");
-//		System.out.println(id);
-//		System.out.println(currentMovePosition);
-//		System.out.println(futureMovePosition);
-//		
-//		String currentPlayerTurnColor = gameMove.getCurrentPlayerTurnColor();
-//		
-//		Piece currentPosition = getPiecePosition(currentMovePosition);
-//		Piece futurePosition = getPiecePosition(futureMovePosition);
-//		
-//		String currentPositionColor = null;
-//		String currentPositionType = null;
-//		
-//		String futurePositionColor = null;
-//		String futurePositionType = null;
-//		
-//		if(currentPosition != null) {
-//			currentPositionColor = currentPosition.getColor();
-//			currentPositionType = currentPosition.getType();
-//		}
-//		
-//		if(futurePosition != null) {
-//			futurePositionColor = futurePosition.getColor();
-//			futurePositionType = futurePosition.getType();
-//		}
-//		
-//		// Validate selected piece belongs to current player
-//		if(currentPlayerTurnColor == currentPositionColor) {
-//			boolean validPieceMove = false;
-//			
-//			// Validate selected piece can move to future position
-//			if(futurePosition == null) {
-//				validPieceMove = validatePieceMove(currentPosition, futureMovePosition);				
-//			} //else if(futurePositionColor != currentPlayerTurnColor) {
-//				//validPieceMove = validatePieceMove(currentPosition, futurePosition);
-//			//}
-//			
-//			if(validPieceMove) {
-//				//
-//			}
-//			
-//			
-//		} else {
-//			System.out.println("Validate Move Error.");
-//		}
+
+		// Cannot take own pieces
+		if (!validateColors(currentGenericPiece.getColor(), futureGenericPiece.getColor())) {
+			isValidMove = true;
+		}
 		
+		return isValidMove;		
+	}
+	
+	/**
+	 * Validates the colors for the current and future pieces
+	 * 
+	 * @param currentPieceColor the current piece's color
+	 * @param futurePieceColor the future piece's color
+	 * 
+	 * @return boolean
+	 */
+	public boolean validateColors(String currentPieceColor, String futurePieceColor) {
+		return currentPieceColor.equals(futurePieceColor) ? true : false;
+	}
+
+	/**
+	 * Gets the piece from the database based on the position 
+	 * 
+	 * @param messagePositionX the message position x
+	 * @param messagePositionY the message position y
+	 * 
+	 * @return the generic piece or null
+	 */
+	public GenericPiece getPieceFromDatabase(int messagePositionX, int messagePositionY) {
+		GenericPiece genericPiece = new GenericPiece();
 		
+		PostgreSQLJDBC postgres = new PostgreSQLJDBC();
+		String databaseGameStatus = postgres.getGameStatus();
+		
+		try {			
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode root = mapper.readTree(databaseGameStatus);
+			JsonNode piecesNode = root.path("pieces");
+			
+			for (JsonNode node : piecesNode) {
+				String color = node.path("color").asText();
+				String type = node.path("type").asText();
+
+				int x = -1;
+				int y = -1;
+				
+				Iterator<JsonNode> position = node.path("position").iterator();
+				
+				while (position.hasNext()) {
+					
+					JsonNode item = position.next();
+					
+					if (position.hasNext()) {
+						// Array index 0
+						x = item.asInt();
+					} else if (!position.hasNext()) {
+						// Array index 1
+						y = item.asInt();
+						
+						// The position exists for a piece in the database
+						if (messagePositionX == x && messagePositionY == y) {
+							int[] databasePosition = new int[2];
+							databasePosition[0] = x;
+							databasePosition[1] = y;
+							
+							genericPiece.setColor(color);
+							genericPiece.setType(type);
+							genericPiece.setPosition(databasePosition);
+						}
+					}
+					
+				}
+				
+			}
+		}catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return genericPiece;
 	}
 	
 	/**
@@ -199,30 +246,5 @@ public class Game {
 				
 		return validPieceMove;
 	}
-	
-//	public boolean validatePieceMove(Piece currentPosition, Piece futurePosition) {
-//		
-//	}
-	
-	/**
-	 * Gets the piece based on the position.
-	 * 
-	 * @param position The position for the piece
-	 * 
-	 * @return The found piece or null
-	 */
-	public Piece getPiecePosition(int[] position) {
-		Piece foundPiece = null;
-		
-		for(Piece piece : this.pieces.getPieces()) {
-			if(Arrays.equals(piece.getPosition(), position)) {
-				System.out.println(Arrays.equals(piece.getPosition(), position));
-				foundPiece = piece;
-			}
-		}
-		
-		return foundPiece;
-	}
-	
-	
+
 }

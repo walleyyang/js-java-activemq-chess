@@ -13,7 +13,8 @@ const DB = require('./db')
 const database = new DB()
 
 app.use(webpackMiddleware(webpack(webpackConfig)))
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 
 // Get Routes
 app.get('/', (req, res) => {
@@ -49,12 +50,12 @@ app.post('/game/:id/add-second-player/:name', (req, res) => {
   })
 })
 
-app.post('/id/:id/game-status/:gameStatus', (req, res) => {
-  let id = req.params.id
-  let gameStatus = req.params.gameStatus
+app.post('/id/:id/game-status', (req, res) => {
+  let id = req.body.id
+  let gameStatus = req.body
 
   database.getActiveGame().then((data) => {
-    database.updateGameStatus(id, JSON.parse(JSON.stringify(gameStatus)))
+    database.updateGameStatus(id, gameStatus)
     res.send()
   })
 })

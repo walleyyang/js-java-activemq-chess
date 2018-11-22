@@ -22,8 +22,7 @@ public class GameManager {
 //		
 //		GameMove moveMessage = activeMQ.getMoveMessage();
 //		System.out.println(moveMessage);
-		PostgreSQLJDBC postgres = new PostgreSQLJDBC();
-		postgres.getGameStatus();
+		
 		run();
 	}
 	
@@ -42,9 +41,9 @@ public class GameManager {
 	 * @param mappedMessage the consumer message from ActiveMQ
 	 */
 	public static void handleReceivedMessage(GameMessage mappedMessage) {
-		boolean validMove = game.validateMove(mappedMessage);
-		System.out.println("in handleReceivedMessage..");
-		if (validMove) {	
+		boolean isValidMove = game.validateMove(mappedMessage);
+
+		if (isValidMove) {	
 			mappedMessage.setValidMove(true);
 			String validatedMessage = convertStatusToJson(mappedMessage);
 			System.out.println(validatedMessage);
