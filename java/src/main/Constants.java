@@ -7,7 +7,7 @@ public enum Constants {
 	BISHOP("Bishop"),
 	BLACK("Black"),
 	BLACK_MAJOR_ROW(0),
-	BLACK_MINIOR_ROW(1),
+	BLACK_MINOR_ROW(1),
 	GAME_MAX_ID(1000000),
 	GAME_MIN_ID(1),
 	JOINABLE_FULL(2),

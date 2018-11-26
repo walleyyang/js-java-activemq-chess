@@ -1,6 +1,7 @@
 package main;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
@@ -20,97 +21,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Game {
 	
-	private int id = 0;
-//	private boolean joinable = true;
-	private boolean gameOver = false;
-//	private Player[] players = new Player[2];
-	private String turn = Constants.WHITE.getString();
-	private Pieces pieces = new Pieces();
-	
 	private String rook = Constants.ROOK.getString();
 	private String knight = Constants.KNIGHT.getString();
 	private String bishop = Constants.BISHOP.getString();
 	private String queen = Constants.QUEEN.getString();
 	private String king = Constants.KING.getString();
 	private String pawn = Constants.PAWN.getString();
-	private String black = Constants.BLACK.getString();
-	private String white = Constants.WHITE.getString();
-	
-	public Game() {
-		// TODO: Update 
-		//setId();
-		// this.id = 123;
-		 
-		 //String status = convertStatusToJson();
-		 
-		 //ActiveMQ activeMQ = new ActiveMQ();
-//		 activeMQ.sendMessage(status);
-		 
-//		 Games games = Games.getInstance();
-//		 games.addGame(this);
-	}
-	
-	public int getId() { return id; }
-//	public boolean getJoinable() { return joinable; }
-	public boolean getGameOver() { return gameOver; }
-//	public Player[] getPlayers() { return players; }
-	public String getTurn() { return turn; }
-	public Pieces getPieces() { return pieces; }
-	/**
-	 * Sets a random number to the game id.
-	 */
-//	public void setId() {
-//		Random randomId = new Random();
-//		int gameMinId = Constants.GAME_MIN_ID.getInt();
-//		int gameMaxId = Constants.GAME_MAX_ID.getInt();
-//		
-//		id = randomId.nextInt(gameMaxId - gameMinId) + gameMinId;
-//	}
-	
-	/**
-	 * Sets joinable depending on the number of players.
-	 */
-//	public void setJoinable() {
-//		int joinableFull = Constants.JOINABLE_FULL.getInt();
-//		
-//		joinable = players.length == joinableFull ? false : true;
-//	}
-	
-	/**
-	 * Sets the player for the game.
-	 * 
-	 * @param player
-	 */	
-//	public void setPlayers(Player player) {
-//		boolean joinable = getJoinable();
-//		
-//		if(joinable) {
-//			if(getPlayers()[0] == null) {
-//				getPlayers()[0] = player;
-//			} else if(getPlayers()[1] == null) {
-//				getPlayers()[1] = player;
-//			}
-//		}
-//	}
-	
-	/**
-	 * Sets turn for player based on color.
-	 */
-	public void setTurn() {
-		String black = Constants.BLACK.getString();
-		String white = Constants.WHITE.getString();
-		
-		turn = turn == black ? white : black;
-	}
-	
-	/**
-	 * Sets game over.
-	 */
-	public void setGameOver() {
-		gameOver = true;
-	}
-	
 
+	private ArrayList<int[]> piecePositions = null;	
 	
 	/**
 	 * Validates the move from the player and the positions in the game.
@@ -120,6 +38,7 @@ public class Game {
 	public boolean validateMove(GameMessage mappedMessage) {
 		boolean isValidMove = false;
 		
+		String mappedMessageCurrentPlayerTurnColor = mappedMessage.getCurrentPlayerTurnColor();
 		int[] mappedMessageCurrentPosition = mappedMessage.getCurrentPosition();
 		int[] mappedMessageFuturePosition = mappedMessage.getFuturePosition();
 		
@@ -130,28 +49,87 @@ public class Game {
 		
 		GenericPiece currentGenericPiece = getPieceFromDatabase(messageCurrentPositionX, messageCurrentPositionY);
 		GenericPiece futureGenericPiece = getPieceFromDatabase(messageFuturePositionX, messageFuturePositionY);
-
+		String currentGenericPieceType = currentGenericPiece.getType();
+		String currentGenericPieceColor = currentGenericPiece.getColor();
+		String futureGenericPieceType = futureGenericPiece.getType();
 
 		// Cannot take own pieces
-		if (!validateColors(currentGenericPiece.getColor(), futureGenericPiece.getColor())) {
-			isValidMove = true;
+		if (validateColors(mappedMessageCurrentPlayerTurnColor, currentGenericPiece.getColor(), futureGenericPiece.getColor())) {
+			this.piecePositions = getPositionsFromDatabase();
+			
+			isValidMove = validatePieceMove(futureGenericPieceType,
+							  				currentGenericPieceType, 
+											currentGenericPieceColor,
+											messageCurrentPositionX, 
+											messageCurrentPositionY, 
+											messageFuturePositionX, 
+											messageFuturePositionY);
 		}
 		
 		return isValidMove;		
 	}
 	
 	/**
-	 * Validates the colors for the current and future pieces
+	 * Validates the colors for the player, current and future pieces
 	 * 
+	 * @param currentPlayerTurnColor the current player's color
 	 * @param currentPieceColor the current piece's color
 	 * @param futurePieceColor the future piece's color
 	 * 
 	 * @return boolean
 	 */
-	public boolean validateColors(String currentPieceColor, String futurePieceColor) {
-		return currentPieceColor.equals(futurePieceColor) ? true : false;
+	public boolean validateColors(String currentPlayerTurnColor, String currentPieceColor, String futurePieceColor) {
+		return currentPlayerTurnColor.equals(currentPieceColor) && !currentPieceColor.equals(futurePieceColor) ? true : false;
 	}
 
+	/**
+	 * Gets the piece positions from the database
+	 * 
+	 * @return The piece positions
+	 */
+	public ArrayList<int[]> getPositionsFromDatabase() {
+		PostgreSQLJDBC postgres = new PostgreSQLJDBC();
+		String databaseGameStatus = postgres.getGameStatus();
+		ArrayList<int[]> positions = new ArrayList<>();
+		
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode root = mapper.readTree(databaseGameStatus);
+			JsonNode piecesNode = root.path("pieces");
+			
+			for (JsonNode node : piecesNode) {
+				int x = -1;
+				int y = -1;
+				
+				Iterator<JsonNode> position = node.path("position").iterator();
+				
+				while (position.hasNext()) {
+					JsonNode item = position.next();
+					
+					if (position.hasNext()) {
+						// Array index 0
+						x = item.asInt();
+					} else if (!position.hasNext()) {
+						// Array index 1
+						y = item.asInt();
+						
+						int[] databasePosition = new int[2];
+						databasePosition[0] = x;
+						databasePosition[1] = y;
+						
+						positions.add(databasePosition);
+					}
+				}
+			}
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return positions;
+	}
+	
 	/**
 	 * Gets the piece from the database based on the position 
 	 * 
@@ -181,7 +159,6 @@ public class Game {
 				Iterator<JsonNode> position = node.path("position").iterator();
 				
 				while (position.hasNext()) {
-					
 					JsonNode item = position.next();
 					
 					if (position.hasNext()) {
@@ -206,7 +183,7 @@ public class Game {
 				}
 				
 			}
-		}catch (JsonMappingException e) {
+		} catch (JsonMappingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -216,34 +193,54 @@ public class Game {
 	}
 	
 	/**
-	 * Validates the current piece position with the future blank position.
+	 * Validates the current piece position with the future blank position based on current piece type.
 	 * 
-	 * @param currentPosition The current piece position
-	 * @param futureMovePosition The future position for the current piece position
+	 * @param futureType the future piece type
+	 * @param currentType the current piece
+	 * @param currentColor the current piece color
+	 * @param currentPositionX the current position X
+	 * @param currentPositionY the current position Y
+	 * @param futurePositionX the future position X
+	 * @param futurePositionY the future position Y
 	 * 
 	 * @return True or false if the futureMovePosition is valid
 	 */
-	public boolean validatePieceMove(Piece currentPosition, int[] futureMovePosition) {
+	public boolean validatePieceMove(String futureType,
+									 String currentType, 
+									 String currentColor, 
+									 int currentPositionX, 
+									 int currentPositionY, 
+									 int futurePositionX, 
+									 int futurePositionY) {
 		boolean validPieceMove = false;
-		String currentPositionType = currentPosition.getType();
+
+		if(currentType.equals(rook)) {
+			Rook rookType = new Rook();
+			rookType.setPiecePositions(this.piecePositions);
+			
+			validPieceMove = rookType.validateMove(futureType, currentColor, currentPositionX, currentPositionY, futurePositionX, futurePositionY);
+		} else if(currentType.equals(knight)) {
+			System.out.println("The current type is: " + currentType);
+		} else if(currentType.equals(bishop)) {
+			Bishop bishopType = new Bishop();
+			bishopType.setPiecePositions(this.piecePositions);
+			
+			validPieceMove = bishopType.validateMove(futureType, currentColor, currentPositionX, currentPositionY, futurePositionX, futurePositionY);
+		} else if(currentType.equals(queen)) {
+			Queen queenType = new Queen();
+			queenType.setPiecePositions(this.piecePositions);
+			
+			validPieceMove = queenType.validateMove(futureType, currentColor, currentPositionX, currentPositionY, futurePositionX, futurePositionY);
+		} else if(currentType.equals(king)) {
+			System.out.println("The current type is: " + currentType);
+		} else if(currentType.equals(pawn)) {
+			Pawn pawnType = new Pawn();
+			
+			validPieceMove = pawnType.validateMove(futureType, currentColor, currentPositionX, currentPositionY, futurePositionX, futurePositionY);
+		} else {
+			System.out.println("cant find valid piece move....");
+		}
 		
-		// Check the currentPostion type to see if futureMovePosition is valid
-		// TODO: Implement
-		if(currentPositionType == rook) {
-			validPieceMove = ((Pawn)currentPosition).validMove(futureMovePosition);
-		} 
-		//else if(currentPositionType == knight) {
-//			
-//		} else if(currentPositionType == bishop) {
-//			
-//		} else if(currentPositionType == queen) {
-//			
-//		} else if(currentPositionType == king) {
-//			
-//		} else if(currentPositionType == pawn) {
-//			
-//		}
-				
 		return validPieceMove;
 	}
 

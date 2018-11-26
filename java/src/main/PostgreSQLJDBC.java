@@ -25,9 +25,7 @@ public class PostgreSQLJDBC {
 			String password = "password";
 			
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(url, user, password);
-			
-			System.out.println("Connected to database.");			
+			connection = DriverManager.getConnection(url, user, password);	
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println(e.getClass().getName()+": "+e.getMessage());

@@ -1,35 +1,70 @@
 package main;
 
+import java.util.ArrayList;
+
 /**
  * The rook object.
  */
-public class Rook extends Piece {
+public class Rook implements Piece {
+	
+	private ArrayList<int[]> piecePositions = null;
+	
+	@Override
+	public boolean validateMove(String futurePieceType, String currentColor, int currentPositionX, int currentPositionY, int futurePositionX, int futurePositionY) {
+		boolean isValidMove = true;
+		boolean horizontalMove = currentPositionX == futurePositionX && currentPositionY != futurePositionY ? true : false;
+		boolean verticalMove = currentPositionY == futurePositionY && currentPositionX != futurePositionX ? true : false;
+		int x = -1;
+		int y = -1;
+		
+		// Move was not horizontal or vertical
+		if (!horizontalMove && !verticalMove) {
+			isValidMove = false;
+			
+			return isValidMove;
+		}
 
-	/**
-	 * The constructor.
-	 * 
-	 * @param color The color.
-	 * @param type The type.
-	 * @param position The position.
-	 */
-	public Rook(String color, String type, int[] position) {
-		super(color, type, position);
+		for (int[] position : piecePositions) {
+			x = position[0];
+			y = position[1];
+			
+			// Checks move for move and blocking pieces
+			if (verticalMove && y == currentPositionY && y == futurePositionY) {
+				// Move up
+				if (currentPositionX > futurePositionX) {
+					if (futurePositionX < x && currentPositionX > x) {
+						isValidMove = false;
+						break;
+					}
+				// Move down
+				} else if (currentPositionX < futurePositionX) {
+					if (futurePositionX > x && currentPositionX < x) {
+						isValidMove = false;
+						break;
+					}
+				}
+			} else if (horizontalMove && x == currentPositionX && x == futurePositionX) {
+				// Move left
+				if (currentPositionY > futurePositionY) {
+					if (futurePositionY < y && currentPositionY > y) {
+						isValidMove = false;
+						break;
+					}
+				// Move right
+				} else if (currentPositionY < futurePositionY) {
+					if (futurePositionY > y && currentPositionY < y) {
+						isValidMove = false;
+						break;
+					}
+				}
+			}			
+		}
+		
+		return isValidMove;
 	}
 	
-	/**
-	 * Checks move
-	 */
-	/*public boolean isValidMove(int[] newPosition) {
-		boolean valid = false;
-		//int currentPosition[] = this.getPosition();
-		//int currentX = currentPosition[0];
-		//int currentY = currentPosition[1];
-		int newX = newPosition[0];
-		int newY = newPosition[1];
-		
-		//TODO: Check horizontal and vertical for obstructions
-		
-		return valid;
-	}*/
+	public void setPiecePositions(ArrayList<int[]> piecePositions) {
+		this.piecePositions = piecePositions;
+	}
 
 }

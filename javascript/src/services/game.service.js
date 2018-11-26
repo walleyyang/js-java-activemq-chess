@@ -165,14 +165,16 @@ export default class GameService {
       let x = item.position[0]
       let y = item.position[1]
 
+      if (x === future[0] && y === future[1]) {
+        gameStatus.pieces.splice(key, 1)
+      }
+
       if (x === current[0] && y === current[1]) {
         item.position = [future[0], future[1]]
-      } else if (x === future[0] && y === future[1]) {
-        if (item.color !== turn) {
-          item.removed = true
-        }
       }
     }
+
+    gameStatus.turn = turn
 
     return gameStatus
   }

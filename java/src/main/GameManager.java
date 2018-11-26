@@ -42,13 +42,24 @@ public class GameManager {
 	 */
 	public static void handleReceivedMessage(GameMessage mappedMessage) {
 		boolean isValidMove = game.validateMove(mappedMessage);
-
-		if (isValidMove) {	
+		
+		if (isValidMove) {
+//			String WHITE = Constants.WHITE.getString();
+//			String BLACK = Constants.BLACK.getString();
+			//String futurePlayerTurnColor = mappedMessage.getCurrentPlayerTurnColor().equals(WHITE) ? BLACK : WHITE;
+			
+			//System.out.println(mappedMessage.getCurrentPlayerTurnColor() + " future: " + futurePlayerTurnColor);
+			
 			mappedMessage.setValidMove(true);
-			String validatedMessage = convertStatusToJson(mappedMessage);
-			System.out.println(validatedMessage);
-			activeMQ.sendMessage(validatedMessage);
+			//mappedMessage.setCurrentPlayerTurnColor(futurePlayerTurnColor);
+		} else {
+			//System.out.println("not valid move::::" + mappedMessage.getCurrentPlayerTurnColor());
+			mappedMessage.setValidMove(false);
 		}
+		
+		String validatedMessage = convertStatusToJson(mappedMessage);
+		//System.out.println(validatedMessage);
+		activeMQ.sendMessage(validatedMessage);
 	}
 	
 	/**

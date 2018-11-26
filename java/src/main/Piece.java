@@ -3,51 +3,23 @@ package main;
 /**
  * The piece object.
  */
-public class Piece {
+public interface Piece {
+	
+	public String BLACK = Constants.BLACK.getString();
+	public String WHITE = Constants.WHITE.getString();
 
-	private String color = "";
-	private String type = "";
-	private int[] position = new int[2];
-	private boolean removed = false;
-	
 	/**
-	 * The constructor.
+	 * Validates the current move with future move
 	 * 
-	 * @param color The piece color.
-	 * @param type The piece type.
-	 * @param position The piece position.
-	 */
-	public Piece(String color, String type, int[] position) {
-		this.color = color;
-		this.type = type;
-		this.position = position;
-	}
-	
-	/**
-	 * Checks horizontal move.
+	 * @param futurePieceType the future piece type
+	 * @param currentColor the current piece color
+	 * @param currentPositionX the current position X
+	 * @param currentPositionY the current position Y
+	 * @param futurePositionX the future position X
+	 * @param futurePositionY the future position Y
 	 * 
-	 * @param newX The new x position.
-	 * @param newY The new y position.
+	 * @return boolean
 	 */
-	/*private boolean isHorizontalMoveValid(int newX, int newY) {
-		int currentX = this.position[0];
-		int currentY = this.position[1];
-		
-		
-	}*/
-	
-	public String getColor() { return color; }
-	public String getType() { return type; }
-	public int[] getPosition() { return position; }
-	public boolean getRemoved() { return removed; }
-	
-	/**
-	 * Sets removed.
-	 * 
-	 * @param value The value to set removed.
-	 */
-	public void setRemoved(boolean value) {
-		removed = value;
-	}
+	public boolean validateMove(String futurePieceType, String currentColor, int currentPositionX, int currentPositionY, int futurePositionX, int futurePositionY);
 	
 }

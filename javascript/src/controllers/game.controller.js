@@ -42,13 +42,11 @@ export default class GameController {
     let receivedMessage = this.GameService.readMessage()
     let currentReceivedmessage = JSON.stringify(this.receivedMessage)
 
-    console.log(receivedMessage)
-
     if (receivedMessage !== null && receivedMessage !== currentReceivedmessage) {
       this.receivedMessage = JSON.parse(receivedMessage)
 
       if (this.receivedMessage.validMove) {
-        this.turn = this.receivedMessage.currentPlayerTurnColor === this.Variables.WHITE ? this.Variables.BLACK : this.Variables.WHITE
+        this.turn = this.turn === this.Variables.WHITE ? this.Variables.BLACK : this.Variables.WHITE
         this.currentPosition = []
         this.futurePosition = []
 
@@ -61,6 +59,8 @@ export default class GameController {
         this.updateBoard()
       } else if (!this.receivedMessage.validMove) {
         console.log('invalid move!!!!')
+        this.currentPosition = []
+        this.futurePosition = []
       }
     }
   }
@@ -79,10 +79,8 @@ export default class GameController {
     if (this.currentPosition.length === this.Variables.EMPTY) {
       this.currentPosition = [x, y]
     } else if (this.futurePosition.length === this.Variables.EMPTY) {
-      let turn = this.turn === this.white ? this.Variables.WHITE : this.Variables.BLACK
-
       this.futurePosition = [x, y]
-      this.GameService.validateMove(this.gameId, turn, this.currentPosition, this.futurePosition)
+      this.GameService.validateMove(this.gameId, this.turn, this.currentPosition, this.futurePosition)
     }
   }
 
@@ -107,9 +105,10 @@ export default class GameController {
         this.white = data.white
         this.gameId = data.game_id
         this.gameStatus = data.game_status
+        this.playersJoined = true
 
         if (this.turn === '') {
-          this.turn = data.white
+          this.turn = this.gameStatus.turn
         }
 
         this.run()

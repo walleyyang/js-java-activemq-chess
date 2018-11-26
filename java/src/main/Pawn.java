@@ -3,42 +3,57 @@ package main;
 /**
  * The pawn object.
  */
-public class Pawn extends Piece {
+public class Pawn implements Piece {
 	
-	private String black = Constants.BLACK.getString();
-	private String white = Constants.WHITE.getString();
-	private int blackMajorRow = Constants.BLACK_MAJOR_ROW.getInt();
-	private int whiteMajorRow = Constants.WHITE_MAJOR_ROW.getInt();
+	private int BLACK_MINOR_ROW = Constants.BLACK_MINOR_ROW.getInt();
+	private int WHITE_MINOR_ROW = Constants.WHITE_MINOR_ROW.getInt();
+	
+	@Override
+	public boolean validateMove(String futureType, String currentColor, int currentPositionX, int currentPositionY, int futurePositionX, int futurePositionY) {
+		boolean isValidMove = false;
 
-	/**
-	 * The constructor.
-	 * 
-	 * @param color The color.
-	 * @param type The type.
-	 * @param position The position.
-	 */
-	public Pawn(String color, String type, int[] position) {
-		super(color, type, position);
-	}
-	
-	/**
-	 * Validates the future move to a blank position
-	 * 
-	 * @param futureMovePosition The future position
-	 */
-	public boolean validMove(int[] futureMovePosition) {
-		boolean validPieceMove = false;
-		int futureX = futureMovePosition[0];
-		int currentX = this.getPosition()[0];
-		String color = this.getColor();
-		
-		if(color == black) {
-			validPieceMove = futureX > currentX && futureX <= whiteMajorRow ? true : false;
-		} else if(color == white) {
-			validPieceMove = futureX < currentX && futureX >= blackMajorRow ? true : false;
+		if (currentColor.equals(Piece.BLACK)) {
+			// Valid initial move
+			if ((currentPositionX == BLACK_MINOR_ROW && futurePositionX == BLACK_MINOR_ROW + 2) && 
+			    (currentPositionY == futurePositionY) && futureType.isEmpty()) {
+				isValidMove = true;
+			} else if (!futureType.isEmpty()) {
+				// Valid attacking
+				if (currentPositionX + 1 == futurePositionX &&
+				   (currentPositionY + 1 == futurePositionY ||
+				    currentPositionY - 1 == futurePositionY)) {
+					isValidMove = true;
+				}
+			} else if (futureType.isEmpty()) {
+				// Valid moves
+				if (currentPositionX + 1 == futurePositionX &&
+					currentPositionY == futurePositionY) {
+					isValidMove = true;
+				}
+			}
 		}
 		
-		return validPieceMove;
+		if (currentColor.equals(Piece.WHITE)) {
+			if ((currentPositionX == WHITE_MINOR_ROW && futurePositionX == WHITE_MINOR_ROW - 2) && 
+			    (currentPositionY == futurePositionY) && futureType.isEmpty()) {
+				isValidMove = true;
+			} else if (!futureType.isEmpty()) {
+				if (currentPositionX - 1 == futurePositionX &&
+				   (currentPositionY - 1 == futurePositionY ||
+				    currentPositionY + 1 == futurePositionY)) {
+					
+					isValidMove = true;
+				}
+			} else if (futureType.isEmpty()) {
+				if (currentPositionX - 1 == futurePositionX &&
+					currentPositionY == futurePositionY) {
+					
+					isValidMove = true;
+				}
+			}	
+		}
+		
+		return isValidMove;
 	}
-
+	
 }
