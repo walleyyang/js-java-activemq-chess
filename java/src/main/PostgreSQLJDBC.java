@@ -20,6 +20,7 @@ public class PostgreSQLJDBC {
 	 */
 	public void connect() {
 		try {
+			// Probably should put this in a config file if you plan on using this outside of a demo
 			String url = "jdbc:postgresql://localhost:5432/game";
 			String user = "postgres";
 			String password = "password";

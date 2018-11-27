@@ -1,7 +1,7 @@
 package main;
 
 /**
- * The piece object.
+ * The piece interface.
  */
 public interface Piece {
 	

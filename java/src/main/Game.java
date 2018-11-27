@@ -2,16 +2,8 @@ package main;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
 
-import javax.jms.Message;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +19,8 @@ public class Game {
 	private String queen = Constants.QUEEN.getString();
 	private String king = Constants.KING.getString();
 	private String pawn = Constants.PAWN.getString();
+	private String currentType = "";
+	private String futureType = "";
 
 	private ArrayList<int[]> piecePositions = null;	
 	
@@ -56,6 +50,8 @@ public class Game {
 		// Cannot take own pieces
 		if (validateColors(mappedMessageCurrentPlayerTurnColor, currentGenericPiece.getColor(), futureGenericPiece.getColor())) {
 			this.piecePositions = getPositionsFromDatabase();
+			this.currentType = currentGenericPieceType;
+			this.futureType = futureGenericPieceType;
 			
 			isValidMove = validatePieceMove(futureGenericPieceType,
 							  				currentGenericPieceType, 
@@ -220,7 +216,9 @@ public class Game {
 			
 			validPieceMove = rookType.validateMove(futureType, currentColor, currentPositionX, currentPositionY, futurePositionX, futurePositionY);
 		} else if(currentType.equals(knight)) {
-			System.out.println("The current type is: " + currentType);
+			Knight knightType = new Knight();
+			
+			validPieceMove = knightType.validateMove(futureType, currentColor, currentPositionX, currentPositionY, futurePositionX, futurePositionY);
 		} else if(currentType.equals(bishop)) {
 			Bishop bishopType = new Bishop();
 			bishopType.setPiecePositions(this.piecePositions);
@@ -232,16 +230,19 @@ public class Game {
 			
 			validPieceMove = queenType.validateMove(futureType, currentColor, currentPositionX, currentPositionY, futurePositionX, futurePositionY);
 		} else if(currentType.equals(king)) {
-			System.out.println("The current type is: " + currentType);
+			King kingType = new King();
+			
+			validPieceMove = kingType.validateMove(futureType, currentColor, currentPositionX, currentPositionY, futurePositionX, futurePositionY);
 		} else if(currentType.equals(pawn)) {
 			Pawn pawnType = new Pawn();
 			
 			validPieceMove = pawnType.validateMove(futureType, currentColor, currentPositionX, currentPositionY, futurePositionX, futurePositionY);
-		} else {
-			System.out.println("cant find valid piece move....");
 		}
 		
 		return validPieceMove;
 	}
+	
+	public String getCurrentType() { return this.currentType; }
+	public String getFutureType() { return this.futureType; }
 
 }

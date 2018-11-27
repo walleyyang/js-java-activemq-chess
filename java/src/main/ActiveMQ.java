@@ -62,25 +62,6 @@ public class ActiveMQ {
 		
 		String CHESS_STATUS_VALIDATED = "Chess.Status.Validated";
 		
-//		Producer() {
-//			try {
-//				ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQ.this.URL);
-//				
-//			    connection = connectionFactory.createConnection();
-//			    connection.start();
-//			    
-//			    session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-//			    
-//			    destination = session.createTopic(CHESS_STATUS_VALIDATED);
-//			    
-//			    producer = session.createProducer(destination);
-//	            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-//			}  catch (Exception e) {
-//				System.out.println("ActiveMQ Producer Exception: " + e);
-//				e.printStackTrace();
-//			}
-//		}
-		
 		/** 
 		 * Sends message to ActiveMQ.
 		 */
@@ -197,36 +178,8 @@ public class ActiveMQ {
 	                	GameMessage mappedMessage = mapper.readValue(text, GameMessage.class);
 	                    
 	                	GameManager.handleReceivedMessage(mappedMessage);
-//		                int gameMoveId = gameMove.getId();
-		                
-//		                Game game = new Game();
-//		                game.validateMove(gameMove);
-//		                for(Game game : Games.getCurrentGames()) {
-//		                	System.out.println("in for loop");
-//		                	System.out.println(game.getId());
-//		                	System.out.println(gameMoveId);
-//		                	if(game.getId() == gameMoveId) {
-//		                		System.out.println("in if...");
-//		                		game.validateMove(gameMove);
-//		                	}
-//		                }
 	                }
-//	                } else if(message instanceof TextMessage) {
-//	                    TextMessage textMessage = (TextMessage) message;
-//	                    String text = textMessage.getText();
-//
-//	                    ObjectMapper mapper = new ObjectMapper();
-//		                GameMove gameMove = mapper.readValue(text, GameMove.class);
-//	                    
-//		                int gameMoveId = gameMove.getId();
-//		                
-//		                System.out.println("in textmessage...");
-//		                for(Game game : Games.getCurrentGames()) {
-//		                	if(game.getId() == gameMoveId) {
-//		                		game.validateMove(gameMove);
-//		                	}
-//		                }
-//	                }
+
 	            } catch (Exception e) {
 	                System.out.println("ActiveMQ Consumer Message Exception: " + e);
 	                e.printStackTrace();
@@ -238,7 +191,6 @@ public class ActiveMQ {
 		public void onException(JMSException arg0) {
 			System.out.println("JMS Exception occured. Shutting down client.");
 		}
-		
 	}
 	
 }

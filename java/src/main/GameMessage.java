@@ -11,6 +11,7 @@ public class GameMessage {
 	private int[] futurePosition = new int[2];
 	private boolean validMove = false;
 	private boolean gameOver = false;
+	private boolean pawnPromotion = false;
 	
 	public void setId(int id) { this.id = id; }
 	
@@ -26,6 +27,7 @@ public class GameMessage {
 		this.futurePosition[1] = futurePosition[1];
 	}
 	
+	public void setPawnPromotion(boolean promote) { this.pawnPromotion = promote; }
 	public void setValidMove(boolean validMove) { this.validMove = validMove; }
 	public void setGameOver(boolean gameOver) { this.gameOver = gameOver; }
 	
@@ -37,6 +39,7 @@ public class GameMessage {
 	
 	public int[] getFuturePosition() { return this.futurePosition; }
 	
+	public boolean getPawnPromotion() { return this.pawnPromotion; }
 	public boolean getValidMove() { return this.validMove; }
 	public boolean getGameOver() { return this.gameOver; }
 }

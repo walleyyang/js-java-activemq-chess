@@ -79,6 +79,7 @@ module.exports = class DB {
     return {
       "id": id,
       "gameOver": false,
+      "pawnPromotion": false,
       "turn": "White",
       "pieces": [{
         "color": "Black",

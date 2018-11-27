@@ -1,10 +1,6 @@
 package main;
 
-import javax.jms.Message;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-
 
 /**
 * Singleton class to manage game.
@@ -14,17 +10,6 @@ public class GameManager {
 	private static GameManager gameManager = new GameManager();
 	private static Game game = new Game();
 	private static ActiveMQ activeMQ = new ActiveMQ();
-
-	private GameManager() {
-		System.out.println("in game manager");
-		
-//		ActiveMQ activeMQ = new ActiveMQ();
-//		
-//		GameMove moveMessage = activeMQ.getMoveMessage();
-//		System.out.println(moveMessage);
-		
-		run();
-	}
 	
 	/**
 	 * Creates instance of GameManager
@@ -44,16 +29,31 @@ public class GameManager {
 		boolean isValidMove = game.validateMove(mappedMessage);
 		
 		if (isValidMove) {
-//			String WHITE = Constants.WHITE.getString();
-//			String BLACK = Constants.BLACK.getString();
-			//String futurePlayerTurnColor = mappedMessage.getCurrentPlayerTurnColor().equals(WHITE) ? BLACK : WHITE;
-			
-			//System.out.println(mappedMessage.getCurrentPlayerTurnColor() + " future: " + futurePlayerTurnColor);
+			String futureType = game.getFutureType();
+			String currentType = game.getCurrentType();
 			
 			mappedMessage.setValidMove(true);
-			//mappedMessage.setCurrentPlayerTurnColor(futurePlayerTurnColor);
+			
+			// Game Over
+			if (futureType.equals(Constants.KING.getString())) {
+				mappedMessage.setGameOver(true);
+			}
+			
+			// Pawn promotion
+			if (currentType.equals(Constants.PAWN.getString())) {
+				String color = mappedMessage.getCurrentPlayerTurnColor();
+				String WHITE = Constants.WHITE.getString();
+				String BLACK = Constants.BLACK.getString();
+				
+				int x = mappedMessage.getFuturePosition()[0];
+				int blackPromotionRow = Constants.WHITE_MAJOR_ROW.getInt();
+				int whitePromotionRow = Constants.BLACK_MAJOR_ROW.getInt();
+				
+				if((color.equals(WHITE) && x == whitePromotionRow) || (color.equals(BLACK) && x == blackPromotionRow)) {
+					mappedMessage.setPawnPromotion(true);
+				}
+			}
 		} else {
-			//System.out.println("not valid move::::" + mappedMessage.getCurrentPlayerTurnColor());
 			mappedMessage.setValidMove(false);
 		}
 		
@@ -81,10 +81,6 @@ public class GameManager {
 		}
 		
 		return json;
-	}
-	
-	protected static void run() {
-		System.out.println("in run...");
 	}
 
 }
