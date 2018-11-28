@@ -60,6 +60,22 @@ app.post('/id/:id/game-status', (req, res) => {
   })
 })
 
+app.post('/id/:id/game-over', (req, res) => {
+  let id = req.params.id
+
+  database.getActiveGame().then((data) => {
+    database.deleteGame(id)
+    res.send()
+  })
+})
+
+app.post('/delete-all-games', (req, res) => {
+  database.getActiveGame().then((data) => {
+    database.deleteAllGames()
+    res.send()
+  })
+})
+
 app.listen(3000, () => {
   console.log('Listening on localhost:3000')
 })

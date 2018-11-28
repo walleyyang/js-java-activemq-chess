@@ -1,3 +1,7 @@
+body {
+  background: #B4AEAE;
+}
+
 button:focus {
   outline: 0;
 }
@@ -29,6 +33,20 @@ button:focus {
 
 .player-turn {
   color: green;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.white {
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.black {
+  color: black;
+  font-size: 32px;
+  font-weight: bold;
 }
 
 table tr:nth-child(even) td:nth-child(odd) {
@@ -54,4 +72,30 @@ table tr:nth-child(odd) td:nth-child(even) {
   height: 80px;
   border: 1px solid;
   cursor: pointer;
+}
+
+.overlay {
+  position: absolute;
+  width: 640px;
+  height: 640px;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+}
+
+.flex-container {
+  display: flex;
+}
+
+.flex-center {
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-direction-column {
+  flex-direction: column;
+}
+
+.game-message {
+  min-height: 50px;
+  font-size: 24px;
 }

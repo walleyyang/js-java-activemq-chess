@@ -2,10 +2,13 @@
   <div ng-if="$ctrl.white > 0 && $ctrl.black > 0">
     Waiting On Opponent...
   </div>
-  <div>White: <span ng-class="{ 'player-turn' : $ctrl.turn === $ctrl.white }">{{ $ctrl.white }}</span></div>
-  <div>Black: <span ng-class="{ 'player-turn' : $ctrl.turn === $ctrl.black }">{{ $ctrl.black }}</span></div>
-  <div>{{$ctrl.turn}}</div>
-  <div>
+  <div class="flex-container flex-center flex-direction-column">
+    <span ng-class="{ 'white' : $ctrl.turn === 'Black', 'player-turn' : $ctrl.turn === 'White' }">{{ $ctrl.white }}</span>
+    <span ng-class="{ 'black' : $ctrl.turn === 'White', 'player-turn' : $ctrl.turn === 'Black' }">{{ $ctrl.black }}</span>
+  </div>
+  <div class="game-message flex-container flex-center">{{ $ctrl.gameMessage }}</div>
+  <div class="flex-container flex-center">
+    <div ng-class="{ 'overlay' : $ctrl.overlay === true }"></div>
     <table>
       <tbody>
         <tr ng-repeat="row in $ctrl.board track by $index"> 

@@ -48,6 +48,14 @@ module.exports = class DB {
   }
 
   /**
+   * Deletes all games from datbase. Player no longer in room.
+   */
+  deleteAllGames () {
+    console.log('deleteAllGames')
+    this.pool.query('DELETE FROM active_game')
+  }
+
+  /**
    * Adds second player to database
    *
    * @param {number} id

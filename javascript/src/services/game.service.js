@@ -13,7 +13,7 @@ export default class GameService {
     this.Variables = Variables
     this.ActiveMQ = new ActiveMQ()
 
-    this.checkJoinedPlayer()
+    // this.checkJoinedPlayer()
   }
 
   /**
@@ -158,8 +158,11 @@ export default class GameService {
    * @param {number[]} current
    * @param {number[]} future
    * @param {Object} gameStatus
+   * @param {boolean} pawnPromotion
+   *
+   * @returns {Object} gameStatus
    */
-  updateGameStatus (turn, gameOver, current, future, gameStatus) {
+  updateGameStatus (turn, gameOver, current, future, gameStatus, pawnPromotion) {
     for (let key in gameStatus.pieces) {
       let item = gameStatus.pieces[key]
       let x = item.position[0]
@@ -171,12 +174,28 @@ export default class GameService {
 
       if (x === current[0] && y === current[1]) {
         item.position = [future[0], future[1]]
+
+        if (pawnPromotion) {
+          // Nothing but queens for promotion!
+          item.icon = item.color === this.Variables.WHITE ? this.Variables.WHITE_QUEEN_ICON : this.Variables.BLACK_QUEEN_ICON
+          item.type = this.Variables.QUEEN
+        }
       }
     }
 
     gameStatus.turn = turn
 
     return gameStatus
+  }
+
+  /**
+   * Changes game to game over status
+   *
+   * @param {number} id
+   */
+  gameOver (id) {
+    let url = '/id/' + id + '/game-over'
+    this.$http.post(url)
   }
 
   /**
