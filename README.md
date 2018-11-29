@@ -3,6 +3,8 @@
 
 This application was created as an example to learn ES6 AngularJS, ExpressJS, NodeJS, Webpack and Stomp with ActiveMQ. The chess move validation was created with Java.
 
+## Development
+
 ## Install ActiveMQ 
 Download, install and start ActiveMQ.
 
