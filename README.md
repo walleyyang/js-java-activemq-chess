@@ -11,7 +11,7 @@ Download, install and start ActiveMQ.
 ## Java
 Using Eclipse, add the below list of external jars from the Maven repository to the project
 
-activemq-all-5.15.6.jar (From ActiveMQ installation folder)
+activemq-all-5.15.6.jar
 
 jackson-annotations-2.9.7.jar
 
