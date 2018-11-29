@@ -108,6 +108,22 @@ export default class GameController {
     // Reset the message
     this.gameMessage = ''
 
+    let cookie = JSON.parse(this.GameService.getCookie())
+
+    if (this.turn === this.Variables.BLACK) {
+      if (cookie.black !== this.black) {
+        this.gameMessage = this.Variables.WAIT_TURN
+        this.currentPosition = []
+        this.futurePosition = []
+      }
+    } else if (this.turn === this.Variables.WHITE) {
+      if (cookie.white !== this.white) {
+        this.gameMessage = this.Variables.WAIT_TURN
+        this.currentPosition = []
+        this.futurePosition = []
+      }
+    }
+
     if (this.currentPosition.length > this.Variables.EMPTY && this.futurePosition.length > this.Variables.EMPTY) {
       return
     }

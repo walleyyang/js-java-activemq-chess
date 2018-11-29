@@ -105,7 +105,7 @@ export default class GameService {
 
     let cookieData = {
       gameId: id,
-      black: playerName
+      white: playerName
     }
 
     this.createCookieAndGoToGame(cookieData, url)
@@ -218,5 +218,14 @@ export default class GameService {
     if (this.$cookies.getObject(this.Variables.CHESSGAME)) {
       this.$state.go(this.Variables.STATE_GAME)
     }
+  }
+
+  /**
+   * Gets cookie
+   *
+   * @returns {Object} cookie
+   */
+  getCookie () {
+    return this.$cookies.get(this.Variables.CHESSGAME)
   }
 }

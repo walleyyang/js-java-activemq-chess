@@ -14,6 +14,7 @@ export default {
   INVALID_MOVE: 'Invalid Move!',
   JOIN_GAME: 'Join Game',
   QUEEN: 'Queen',
+  WAIT_TURN: 'Looks like its not your turn.',
   WAITING: 'Waiting',
   WAITING_ON_SECOND_PLAYER: 'Waiting on second player...',
   WHITE: 'White',
